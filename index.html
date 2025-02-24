@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Compressor</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+    }
+    h1 {
+      color: #333;
+    }
+    .container {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+    input[type="file"] {
+      margin: 20px 0;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .output {
+      margin-top: 20px;
+    }
+    .output img {
+      max-width: 100%;
+      border-radius: 5px;
+    }
+    .output a {
+      display: inline-block;
+      margin-top: 10px;
+      color: #007bff;
+      text-decoration: none;
+    }
+    .output a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Image Compressor</h1>
+    <input type="file" id="imageInput" accept="image/*" />
+    <button id="compressBtn">Compress Image</button>
+    <div class="output" id="output">
+      <!-- Compressed image and download link will appear here -->
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/browser-image-compression/dist/browser-image-compression.min.js"></script>
+  <script>
+    document.getElementById('compressBtn').addEventListener('click', async () => {
+      const fileInput = document.getElementById('imageInput');
+      const outputDiv = document.getElementById('output');
+
+      if (fileInput.files.length === 0) {
+        alert('Please select an image first.');
+        return;
+      }
+
+      const file = fileInput.files[0];
+
+      const options = {
+        maxSizeMB: 1, // Maximum size in MB
+        maxWidthOrHeight: 1024, // Maximum width or height
+        useWebWorker: true, // Use web worker for better performance
+      };
+
+      try {
+        const compressedFile = await imageCompression(file, options);
+
+        // Display compressed image
+        const img = document.createElement('img');
+        img.src = URL.createObjectURL(compressedFile);
+        outputDiv.innerHTML = '';
+        outputDiv.appendChild(img);
+
+        // Create download link
+        const downloadLink = document.createElement('a');
+        downloadLink.href = URL.createObjectURL(compressedFile);
+        downloadLink.download = `compressed_${file.name}`;
+        downloadLink.textContent = 'Download Compressed Image';
+        outputDiv.appendChild(downloadLink);
+      } catch (error) {
+        console.error('Error compressing image:', error);
+        alert('An error occurred while compressing the image.');
+      }
+    });
+  </script>
+</body>
+</html>
